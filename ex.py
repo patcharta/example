@@ -56,11 +56,8 @@ def save_to_database(product_data_list):
         
         with pyodbc.connect(conn_str) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT ISNULL(MAX(ID), 0) FROM ERP_COUNT_STOCK")
-            max_id = cursor.fetchone()[0]
-            new_id = max_id + 1
-            
             for product_data in product_data_list:
+                new_id = int(datetime.now().timestamp() * 1000000)  
                 data = [
                     new_id,  
                     product_data['Login_Time'], product_data['Enter_By'], product_data['Product_ID'], 
@@ -68,7 +65,6 @@ def save_to_database(product_data_list):
                     product_data['Total_Balance'], product_data['Quantity']
                 ]
                 cursor.execute(query, data)
-                new_id += 1
             conn.commit()
         st.success("Data saved successfully!")
     except pyodbc.Error as e:
